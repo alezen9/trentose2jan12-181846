@@ -24,6 +24,60 @@ if (exists) {
 			};
 }
 
+// aggiungi astronauta
+app.post('/',function(req,res){
+	var astro_name = req.body.firstName;
+	var astro_sur = req.body.lastName;
+	var astro_isInSpace = req.body.isInSpace;
+	file_a.id = file_a.id +1;
+	file_a.astronauts.push({
+		firstName: astro_name,
+		lastName: astro_sur,
+		isInSpace: astro_isInSpace,
+		id: file_a.id
+	})
+	// aggiorniamo il json
+	fs.writeFile('./data.json', JSON.stringify(file_a, null, 2), 'utf-8', function(err) {
+		if (err) throw err;
+		console.log('Succesfully added astronaut ' + astro_name);
+	})
+
+	var reply = {
+		status: 'successfully added astronaut with following characteristics',
+		firstName: astro_name,
+		lastName: astro_sur,
+		isInSpace: astro_isInSpace,
+		id: file_a.id
+	  }
+	res.status(200).send(reply);
+});
+
+
+//mostra tutti gli astronauti presenti nel database
+app.get('/',function(req,res){
+	var reply = file_a.astronauts;
+	console.log(JSON.stringify(reply, null, 2));
+	res.send(reply);
+});
+
+
+//trova con id e mostra astronauta
+app.get('/:id',function(req,res){
+	var reply;
+	var id = Number(req.params.id);
+	var index = file_a.astronauts.findIndex(function(item, i){
+	  return item.id=== id;
+	});
+	if(index<0){
+		reply = 'astronaut not found';
+		console.log(reply);
+	}
+	else{
+		reply = file_a.astronauts[index];
+		console.log(JSON.stringify(reply, null, 2));
+	}
+	res.send(reply);
+});
 
 
 
