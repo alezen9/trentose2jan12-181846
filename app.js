@@ -81,5 +81,60 @@ app.get('/:id',function(req,res){
 
 
 
+//aggiorna dati di un astronauta con id
+app.put('/:id',function(req,res){
+	var reply;
+	var id = Number(req.params.id);
+	var astro_name;
+	var astro_sur;
+	var astro_isInSpace;
+	var index = file_a.astronauts.findIndex(function(item, i){
+		return item.id=== id;
+	});
+	if(index<=0){
+		 reply = 'astronaut not found';
+		console.log(reply);
+	}
+	else{
+		if(!req.body.firstName){
+			astro_name = file_a.astronauts[index].firstName;
+		}
+		else{
+			astro_name = req.body.firstName;
+		}
+		if(!req.body.lastName){
+			astro_sur = file_a.astronauts[index].lastName;
+		}
+		else{
+			astro_sur = req.body.lastName;
+		}
+		if(!req.body.isInSpace){
+			astro_isInSpace = file_a.users[index].isInSpace;
+		}
+		else{
+			astro_isInSpace = req.body.isInSpace;
+		}
+		file_a.astronauts[index].firstName = astro_name;
+		file_a.astronauts[index].lastName = astro_sur;
+		file_a.astronauts[index].isInSpace = astro_isInSpace;
+		reply = {
+			status: 'successfully updated',
+			firstName: astro_name,
+			lastName: astro_sur,
+			isInSpace: astro_isInSpace,
+			id: file_a.astronauts[index].id
+		}
+		// aggiorno json
+		fs.writeFile('./data.json', JSON.stringify(file_a, null, 2), 'utf-8', function(err) {
+			if (err) throw err;
+			console.log('Succesfully updated astronaut ' + astro_name);
+		})
+	}
+	console.log(JSON.stringify(reply, null, 2));
+	res.send(reply);
+});
+
+
+
 // to make it visible to the rest of the programm
 module.exports = app;
